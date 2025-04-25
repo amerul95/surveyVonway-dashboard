@@ -1,9 +1,12 @@
 import React from 'react'
 import Table from '@/components/surveyDashboard/Table'
+import { fetchReview } from '@/app/lib/db'
 
-function surveyDashboard() {
+async function surveyDashboard() {
+    const datas = await fetchReview ()
+    console.log (datas) 
     return (
-        < Table />
+        < Table data={datas}/>
     )
 }
 
