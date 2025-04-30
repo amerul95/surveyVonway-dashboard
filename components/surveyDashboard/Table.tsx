@@ -3,6 +3,7 @@
 import React from 'react';
 import { ReviewRow } from '../types';
 import ZoomableImage from '../zoom-image/ZoomableImage';
+import timestamps from '@/app/lib/timestamps';
 
 interface Props {
     data: ReviewRow[];
@@ -21,6 +22,7 @@ export default function Table({ data }: Props) {
                         <th className="px-6 py-3">Client ID</th>
                         <th className="px-6 py-3">Google Screenshot</th>
                         <th className="px-6 py-3">Trustpilot Screenshot</th>
+                        <th className="px-6 py-3">Submitted Time</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +48,7 @@ export default function Table({ data }: Props) {
                                     height={60}
                                 />
                             </td>
+                            <td className="px-6 py-4">{timestamps(item.submitted_at)}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -6,6 +6,7 @@ export interface ReviewRow {
     client_id: string;
     google_screenshot_url: string;
     trustpilot_screenshot_url: string;
+    submitted_at: string;
 }
 
 export interface LoginRequest {
