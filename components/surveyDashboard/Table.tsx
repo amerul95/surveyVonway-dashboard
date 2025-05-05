@@ -7,6 +7,8 @@ import timestamps from '@/app/lib/timestamps';
 import DownloadButton from '../downloadXlsx/Download-xlsx';
 import Calendar from '../calendar/Calendar';
 import SearchBar from '../searchBar/Search-bar';
+import rejected from '@/app/lib/rejected';
+import approved from '@/app/lib/approved';
 
 interface Props {
     data: ReviewRow[];
@@ -15,6 +17,8 @@ interface Props {
 export default function Table({ data }: Props) {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowPerPage, setRowPerPage] = useState(10);
+    
+    // startDate and endDate
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -36,6 +40,7 @@ export default function Table({ data }: Props) {
         );
     });
 
+    // change paginationn
     const ROWS_PER_PAGE = rowPerPage;
 
     const totalPages = Math.ceil(filteredData.length / ROWS_PER_PAGE);
@@ -58,6 +63,11 @@ export default function Table({ data }: Props) {
         setCurrentPage(1);
     }
 
+    // approval button
+    const handleApproval = (row: ReviewRow, isApproved: boolean) => {
+        console.log(`${isApproved ? 'Approved' : 'Rejected'}:`, row);
+    };
+
     return (
         <div className="relative overflow-x-auto">
             {/* Controls Group */}
@@ -66,7 +76,6 @@ export default function Table({ data }: Props) {
                 {/* Date Picker */}
                 <div className="flex flex-col gap-2">
                     <Calendar startDate={startDate} endDate={endDate} onDateChange={handleDateChange} />
-
                     <DownloadButton data={data} startDate={startDate} endDate={endDate} />
                 </div>
 
@@ -101,6 +110,7 @@ export default function Table({ data }: Props) {
                         <th className="px-6 py-3">Google Screenshot</th>
                         <th className="px-6 py-3">Trustpilot Screenshot</th>
                         <th className="px-6 py-3">Submitted Time</th>
+                        <th className="px-6 py-3">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,6 +137,30 @@ export default function Table({ data }: Props) {
                                 />
                             </td>
                             <td className="px-6 py-4">{timestamps(item.submitted_at)}</td>
+                            <td className="px-6 py-4 flex gap-2">
+                                <button
+                                    className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                                    onClick={() => 
+                                        approved({
+                                            name: item.name,
+                                            email: item.email,
+                                            client_id: item.client_id
+                                        })}
+                                >
+                                    Approve
+                                </button>
+                                <button
+                                    className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                                    onClick={() => 
+                                        rejected({
+                                            name: item.name, 
+                                            email: item.email, 
+                                            client_id: item.client_id
+                                        })}
+                                >
+                                    Reject
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
