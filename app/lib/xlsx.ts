@@ -9,18 +9,18 @@ type ExtendedReviewRow = ReviewRow & {
 };
 
 export async function exportExcel(
-    data: ExtendedReviewRow[],
-    selectedOnly: boolean,
-    selectedDate: Date | null
-) {
+data: ExtendedReviewRow[], selectedOnly: boolean, startDate: Date | null, endDate: Date | null) {
     let filteredData = selectedOnly ? data.filter(d => d.selected) : data;
 
     // Filter by selected date
-    if (selectedDate) {
-        const selectedDateStr = selectedDate.toISOString().split("T")[0];
+    if (startDate && endDate) {
+        const endOfDay = new Date(endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        // const selectedDateStr = selectedDate.toISOString().split("T")[0];
         filteredData = filteredData.filter(row => {
-            const submittedDateStr = new Date(row.submitted_at).toISOString().split("T")[0];
-            return submittedDateStr === selectedDateStr;
+            const submittedDate = new Date(row.submitted_at).getTime();
+            return submittedDate >= startDate.getTime() && submittedDate <= endOfDay.getTime();
         });
     }
 

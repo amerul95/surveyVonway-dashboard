@@ -15,7 +15,14 @@ interface Props {
 export default function Table({ data }: Props) {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowPerPage, setRowPerPage] = useState(10);
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+
+    const handleDateChange = (dates: [Date | null, Date | null]) => {
+        const [start, end] = dates;
+        setStartDate(start);
+        setEndDate(end);
+    };
 
     // search placeholder
     const [searchQuery, setSearchQuery] = useState('');
@@ -58,9 +65,9 @@ export default function Table({ data }: Props) {
                 
                 {/* Date Picker */}
                 <div className="flex flex-col gap-2">
-                    <Calendar selectedDate={selectedDate} onDateChange={setSelectedDate} />
+                    <Calendar startDate={startDate} endDate={endDate} onDateChange={handleDateChange} />
 
-                    <DownloadButton data={data} selectedDate={selectedDate} />
+                    <DownloadButton data={data} startDate={startDate} endDate={endDate} />
                 </div>
 
                 {/* Search Bar */}

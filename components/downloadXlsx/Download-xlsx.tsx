@@ -6,15 +6,16 @@ import { exportExcel } from '@/app/lib/xlsx';
 interface Props {
     data: any[]; // or ExtendedReviewRow[]
     selectedOnly?: boolean;
-    selectedDate: any;
+    startDate: Date | null;
+    endDate: Date | null;
 }
 
-export default function DownloadButton({ data, selectedDate, selectedOnly = false }: Props) {
+export default function DownloadButton({ data, startDate, endDate, selectedOnly = false }: Props) {
     const [isPending, startTransition] = useTransition();
 
     const handleDownload = () => {
         startTransition(async () => {
-            const base64 = await exportExcel(data, selectedOnly, selectedDate);
+            const base64 = await exportExcel(data, selectedOnly, startDate, endDate);
 
             // Convert base64 to binary
             const binary = atob(base64);
