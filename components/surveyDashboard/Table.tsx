@@ -69,7 +69,7 @@ export default function Table({ data }: Props) {
     };
 
     return (
-        <div className="relative overflow-x-auto">
+        <div className="relative overflow-visible z-10">
             {/* Controls Group */}
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm mb-4">
                 

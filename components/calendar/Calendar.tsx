@@ -21,6 +21,8 @@ export default function Calendar({ startDate, endDate, onDateChange }: CalendarP
                 isClearable
                 placeholderText="Select start and end date"
                 className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                popperClassName="z-50" 
+                popperPlacement="bottom-start" 
             />
         </div>
     );
