@@ -50,8 +50,8 @@ export default function ZoomableImage({ src, alt, width, height }: ZoomableImage
             onClick={handleCloseModal}
             >
             <div
-                className="relative max-w-4xl w-full max-h-[90vh] overflow-hidden"
-                onClick={e => e.stopPropagation()} // prevent closing when clicking on the image
+                className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={e => e.stopPropagation()}
             >
                 <Image
                 src={src}

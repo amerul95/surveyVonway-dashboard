@@ -6,11 +6,13 @@ const sql = postgres(process.env.DATABASE_URL!, { ssl: 'require' });
 // Server-side fetching
 export async function fetchReview() {
     try {
-    const data = await sql<ReviewRow[]>`SELECT * FROM reviews`;
-    return data;
-
-} catch (error) {
-    console.error('Database Error:', error);
-    throw new Error('Failed to fetch review data.');
+        const data = await sql<ReviewRow[]>`
+            SELECT * FROM reviews
+            ORDER BY id ASC
+        `;
+        return data;
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch review data.');
     }
 }

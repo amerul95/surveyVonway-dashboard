@@ -1,11 +1,13 @@
 import { SessionOptions } from "iron-session";
 
 export interface ReviewRow {
+    id: number;
     name: string;
     email: string;
     client_id: string;
     google_screenshot_url: string;
     trustpilot_screenshot_url: string;
+    form_status: string;
     submitted_at: string;
 }
 
