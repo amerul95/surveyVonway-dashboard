@@ -23,7 +23,7 @@ export default function Table({ data }: Props) {
 
     // const router = useRouter()
     // const [loader, setLoader] = useState<{ [clientId: string]: any}>({});
-    const [loadingButtons, setLoadingButtons] = useState<{ [id:number]: 'approve' | 'reject' | 'not checked' | null }>({});
+    const [loadingButtons, setLoadingButtons] = useState<{ [id:number]: 'approved' | 'rejected' | 'not checked' | null }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const [rowPerPage, setRowPerPage] = useState(10);
 
@@ -102,9 +102,9 @@ export default function Table({ data }: Props) {
         status: 'approved' | 'rejected' | 'not checked'
     ) => {
 
-        const statusToLoaderType = (status: 'approved' | 'rejected' | 'not checked'): 'approve' | 'reject' | 'not checked' => {
-            if (status === 'approved') return 'approve';
-            if (status === 'rejected') return 'reject';
+        const statusToLoaderType = (status: 'approved' | 'rejected' | 'not checked'): 'approved' | 'rejected' | 'not checked' => {
+            if (status === 'approved') return 'approved';
+            if (status === 'rejected') return 'rejected';
             return 'not checked';
         };
 
@@ -163,109 +163,6 @@ export default function Table({ data }: Props) {
             setSelectedRows([]);
         }
     };
-
-    // const handleSelectAll = () => {
-    //     const allIds = filteredData.map(item => item.id);
-    //     const allSelected = allIds.every(id => selectedRows.includes(id));
-    //     setSelectedRows(prev => allSelected ? prev.filter(id => !allIds.includes(id)) : [...new Set([...prev, ...allIds])]);
-    // };
-    
-    // const handleSelectByStatus = (status: 'approved' | 'rejected' | 'not checked') => {
-    //     const ids = filteredData
-    //         .filter(item => item.form_status === status)
-    //         .map(item => item.id);
-        
-    //         const allSelected = ids.length > 0 && ids.every(id => selectedRows.includes(id));
-        
-    //         if (allSelected) {
-    //         // Deselect that status group only
-    //             setSelectedRows(prev => prev.filter(id => !ids.includes(id)));
-    //         } else {
-    //             setSelectedRows(ids);
-    //         }
-    // };
-
-    // const selectByStatus = (status: 'approved' | 'rejected' | 'not checked') => {
-    //     const ids = filteredData
-    //     .filter(row => row.form_status === status)
-    //     .map(row => row.id);
-    //     setSelectedRows(ids);
-    // };
-    
-    // const selectAllFiltered = () => {
-    //     const allIds = filteredData.map(row => row.id);
-    //     setSelectedRows(allIds);
-    // };
-
-    // approval button
-    // const handleApprove = async (row: ReviewRow) => {
-    //     setLoadingButtons(prev => ({ ...prev, [row.id]: 'approve'}));
-    //     try {
-    //         const updatedRow = await actionFormStatus(row.id, 'approved');
-    //         await approved({ //new
-    //             name: row.name,
-    //             email: row.email,
-    //             clientId: row.client_id,
-    //         });
-
-    //         if (updatedRow) {
-    //             setTableData(prev =>
-    //                 prev.map(item =>
-    //                     item.id === row.id ? { ...item, form_status: updatedRow.form_status } : item
-    //                 )
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Approval failed:", error);
-    //     } finally {
-    //         setLoadingButtons(prev => ({ ...prev, [row.id]: null}));
-    //     }
-    // };
-
-    // reject button
-    // const handleReject = async (row: ReviewRow) => {
-    //     setLoadingButtons(prev => ({ ...prev, [row.id]: 'reject' }));
-    //     try {
-    //         const updatedRow = await actionFormStatus(row.id, 'rejected');
-    //         await rejected ({
-    //             name: row.name,
-    //             email: row.email,
-    //             clientId: row.client_id,
-    //         });
-
-    //         if (updatedRow) {
-    //             setTableData(prev =>
-    //                 prev.map(item =>
-    //                     item.id === row.id ? { ...item, form_status: updatedRow.form_status } : item
-    //                 )
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Rejection failed:", error);
-    //     } finally {
-    //         setLoadingButtons(prev => ({ ...prev, [row.id]: null}));
-    //     }
-    // };
-
-    // not checked button
-    // const handleNotChecked = async (row: ReviewRow) => {
-    //     setLoadingButtons(prev => ({ ...prev, [row.id]: 'not checked' }));
-    //     try {
-    //         const updatedRow = await actionFormStatus(row.id, 'not checked');
-
-    //         if (updatedRow) {
-    //             setTableData(prev =>
-    //                 prev.map(item =>
-    //                     item.id === row.id ? { ...item, form_status: updatedRow.form_status } : item
-    //                 )
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Not checked failed:", error);
-    //     } finally {
-    //         setLoadingButtons(prev => ({ ...prev, [row.id]: null}));
-    //     }
-    // };
 
     return (
         <div className="relative overflow-visible z-10">
@@ -396,14 +293,14 @@ export default function Table({ data }: Props) {
                                         className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
                                         onClick={() => handleStatusUpdate(item, 'approved')}
                                     >
-                                        {loadingButtons[item.id] === 'approve' ? <Loader /> : <p>Approve</p>}
+                                        {loadingButtons[item.id] === 'approved' ? <Loader /> : <p>Approve</p>}
                                     </button>
                                     
                                     <button
                                         className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
                                         onClick={() => handleStatusUpdate(item, 'rejected')}
                                     >
-                                        {loadingButtons[item.id] === 'reject' ? <Loader /> : <p>Reject</p>}
+                                        {loadingButtons[item.id] === 'rejected' ? <Loader /> : <p>Reject</p>}
                                     </button>
 
                                     <button
