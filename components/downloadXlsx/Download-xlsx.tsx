@@ -2,9 +2,10 @@
 
 import React, { useTransition } from 'react';
 import { exportExcel } from '@/app/lib/xlsx';
+import { ReviewRow } from '../types';
 
 interface Props {
-    data: any[]; // or ExtendedReviewRow[]
+    data: ReviewRow[]; // or ExtendedReviewRow[]
     selectedOnly?: boolean;
     startDate: Date | null;
     endDate: Date | null;

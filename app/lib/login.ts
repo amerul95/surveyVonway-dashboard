@@ -1,3 +1,4 @@
+
 'use server'
 
 import { LoginRequest } from "@/components/types";
@@ -13,6 +14,7 @@ const users:LoginRequest[]=[
 ]
 
 export const LoginUser = async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     prevState: any,
     formData: FormData
 ) => {

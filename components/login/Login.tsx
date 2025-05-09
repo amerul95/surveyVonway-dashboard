@@ -2,6 +2,7 @@
 
 import { LoginUser } from '@/app/lib/login';
 import React, {useActionState} from 'react'
+import Loader from '../loader/Loader';
 
 export default function Login() {
     const [data, formAction, isPending] = useActionState( LoginUser, undefined)
@@ -55,9 +56,10 @@ export default function Login() {
                     type="submit"
                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
-                    Sign in
+                    {isPending === true ? <Loader /> : "Sign in"}
                     </button>
                 </div>
+                {data && <div><p className='text-red-600'>{data.message}</p></div>}
                 </form>
 
             </div>

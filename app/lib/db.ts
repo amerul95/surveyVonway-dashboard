@@ -8,7 +8,7 @@ export async function fetchReview() {
     try {
         const data = await sql<ReviewRow[]>`
             SELECT * FROM reviews
-            ORDER BY id ASC
+            ORDER BY submitted_at DESC
         `;
         return data;
     } catch (error) {

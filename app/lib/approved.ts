@@ -1,5 +1,6 @@
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const approved = async ({name, email, clientId}: any) => {
     try {
         const res = await fetch("https://survey-vonway-express-712e61af48e6.herokuapp.com//email/approved", {

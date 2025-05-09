@@ -10,7 +10,7 @@ import rejected from '@/app/lib/rejected';
 import approved from '@/app/lib/approved';
 import Loader from '../loader/Loader';
 import actionFormStatus from '@/app/lib/actionformstatus';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import Search from '../search/Search';
 import { filterData } from '@/app/lib/filterdata';
 import { useSearchParams } from 'next/navigation';
@@ -21,8 +21,8 @@ interface Props {
 
 export default function Table({ data }: Props) {
 
-    const router = useRouter()
-    const [loader, setLoader] = useState<{ [clientId: string]: any}>({});
+    // const router = useRouter()
+    // const [loader, setLoader] = useState<{ [clientId: string]: any}>({});
     const [loadingButtons, setLoadingButtons] = useState<{ [id:number]: 'approve' | 'reject' | 'not checked' | null }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const [rowPerPage, setRowPerPage] = useState(10);
@@ -289,6 +289,7 @@ export default function Table({ data }: Props) {
                     <select
                         id="status-select"
                         value={statusFilter}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         onChange={(e) => setStatusFilter(e.target.value as any)}
                         className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
