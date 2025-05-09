@@ -12,6 +12,7 @@
     "@heroicons/react": "^2.2.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
+    "eslint-config-next": "^15.3.2",
     "exceljs": "^4.4.0",
     "iron-session": "^8.0.4",
     "next": "15.3.1",

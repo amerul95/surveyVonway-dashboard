@@ -16,9 +16,13 @@ export default function DownloadButton({ data, startDate, endDate, selectedOnly 
 
     const handleDownload = () => {
         startTransition(async () => {
-            const base64 = await exportExcel(data, selectedOnly, startDate, endDate);
+        const base64 = await exportExcel(data, selectedOnly, startDate, endDate);
+          if (!base64) {
+              alert("No new data to export.");
+              return;
+         }
 
-            // Convert base64 to binary
+// Convert base64 to binary
             const binary = atob(base64);
             const bytes = new Uint8Array(binary.length);
             for (let i = 0; i < binary.length; i++) {
