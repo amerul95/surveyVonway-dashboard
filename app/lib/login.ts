@@ -1,8 +1,10 @@
 
 'use server'
 
-import { LoginRequest } from "@/components/types";
-import { getSession } from "./session";
+import { LoginRequest, sessionOptions, SessionData } from "@/components/types";
+import { getIronSession } from "iron-session";
+// import { getSession } from "./session";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const users:LoginRequest[]=[
@@ -19,7 +21,7 @@ export const LoginUser = async (
     formData: FormData
 ) => {
 
-    const session = await getSession();
+    const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
 
     const formEmail = formData.get("email") as string;
     const formPassword = formData.get("password") as string;
@@ -41,6 +43,8 @@ export const LoginUser = async (
 
     //persist the session
     await session.save();
+    console.log("Session saved:", session);
+
     redirect("/dashboard")
 };
 
