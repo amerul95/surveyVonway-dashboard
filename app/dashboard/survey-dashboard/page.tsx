@@ -1,15 +1,16 @@
-import React, { Suspense } from 'react';
+// app/surveyDashboard/page.tsx (or whatever path you're using)
+
 import { fetchReview } from '@/app/lib/db';
 import Table from '@/components/surveyDashboard/Table';
 
-export default async function surveyDashboard() {
-    const datas = await fetchReview();
+export const dynamic = 'force-dynamic'; // 👈 This forces fresh data on each request
 
-    return (
-        <div className="p-4">
-        <Suspense fallback={<div>Loading dashboard...</div>}>
-            <Table data={datas} />
-        </Suspense>
-        </div>
-    );
+export default async function SurveyDashboard() {
+  const datas = await fetchReview();
+
+  return (
+    <div className="p-4">
+      <Table data={datas} />
+    </div>
+  );
 }
