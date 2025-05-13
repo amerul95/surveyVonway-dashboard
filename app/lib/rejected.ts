@@ -1,4 +1,3 @@
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const rejected = async ({name, email, clientId}: any) => {
     try {

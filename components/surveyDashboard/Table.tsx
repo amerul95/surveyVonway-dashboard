@@ -10,19 +10,17 @@ import rejected from '@/app/lib/rejected';
 import approved from '@/app/lib/approved';
 import Loader from '../loader/Loader';
 import actionFormStatus from '@/app/lib/actionformstatus';
-// import { useRouter } from 'next/navigation';
 import Search from '../search/Search';
 import { filterData } from '@/app/lib/filterdata';
 import { useSearchParams } from 'next/navigation';
+import { deleteUserDatabase } from '@/app/lib/deleteuser';
 
 interface Props {
     data: ReviewRow[];
 }
 
 export default function Table({ data }: Props) {
-
-    // const router = useRouter()
-    // const [loader, setLoader] = useState<{ [clientId: string]: any}>({});
+    const [loadingDeletes, setLoadingDeletes] = useState<{ [id: number]: boolean }>({});
     const [loadingButtons, setLoadingButtons] = useState<{ [id:number]: 'approve' | 'reject' | 'not checked' | null }>({});
     const [currentPage, setCurrentPage] = useState(1);
     const [rowPerPage, setRowPerPage] = useState(10);
@@ -36,8 +34,6 @@ export default function Table({ data }: Props) {
     // startDate and endDate
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-
-    // const [dropdownOpen, setDropdownOpen] = useState(false);
 
     // search placeholder
     const searchParams = useSearchParams();
@@ -54,19 +50,6 @@ export default function Table({ data }: Props) {
         setStartDate(start);
         setEndDate(end);
     };
-
-    // const filteredData = tableData.filter((item) => {
-    //     const query = searchQuery.toLowerCase();
-    //     const matchesSearch =
-    //         item.name.toLowerCase().includes(query) ||
-    //         item.email.toLowerCase().includes(query) ||
-    //         item.client_id.toLowerCase().includes(query);
-
-    //     const matchesStatus =
-    //         statusFilter === 'all' || item.form_status === statusFilter;
-
-    //     return matchesSearch && matchesStatus;
-    // });
 
     // change paginationn
     const ROWS_PER_PAGE = rowPerPage;
@@ -101,7 +84,6 @@ export default function Table({ data }: Props) {
         row: ReviewRow,
         status: 'approved' | 'rejected' | 'not checked'
     ) => {
-
         const statusToLoaderType = (status: 'approved' | 'rejected' | 'not checked'): 'approve' | 'reject' | 'not checked' => {
             if (status === 'approved') return 'approve';
             if (status === 'rejected') return 'reject';
@@ -164,108 +146,42 @@ export default function Table({ data }: Props) {
         }
     };
 
-    // const handleSelectAll = () => {
-    //     const allIds = filteredData.map(item => item.id);
-    //     const allSelected = allIds.every(id => selectedRows.includes(id));
-    //     setSelectedRows(prev => allSelected ? prev.filter(id => !allIds.includes(id)) : [...new Set([...prev, ...allIds])]);
-    // };
+    const handleDeleteUser = async (
+        row: ReviewRow,
+        status: 'approved' | 'rejected' | 'not checked'
+    ) => {
+        if (status === 'approved' || status === 'not checked') {
+            const confirmed = window.confirm(`Are you sure you want to delete ${row.name}?`);
+            if (!confirmed) return;
+        }
+
+        setLoadingDeletes(prev => ({ 
+            ...prev, [row.id]: true 
+        }));
+
+        try {
+            const result = await deleteUserDatabase({
+                name: row.name,
+                email: row.email,
+                clientId: row.client_id,
+                id: row.id
+            });
+            console.log(result);
+
+            if (result.success === true) {
+                setTableData(prev => prev.filter(item => item.id !== row.id));
+                alert("Success deleting user.")
+            } else {
+                alert("Failed to delete: " + result.message)
+            }
+        } catch (error) {
+            console.error("Delete error: ", error);
+            alert("Error deleting user.");
+        } finally {
+            setLoadingDeletes(prev => ({ ...prev, [row.id]: false }));
+        }
+    };
     
-    // const handleSelectByStatus = (status: 'approved' | 'rejected' | 'not checked') => {
-    //     const ids = filteredData
-    //         .filter(item => item.form_status === status)
-    //         .map(item => item.id);
-        
-    //         const allSelected = ids.length > 0 && ids.every(id => selectedRows.includes(id));
-        
-    //         if (allSelected) {
-    //         // Deselect that status group only
-    //             setSelectedRows(prev => prev.filter(id => !ids.includes(id)));
-    //         } else {
-    //             setSelectedRows(ids);
-    //         }
-    // };
-
-    // const selectByStatus = (status: 'approved' | 'rejected' | 'not checked') => {
-    //     const ids = filteredData
-    //     .filter(row => row.form_status === status)
-    //     .map(row => row.id);
-    //     setSelectedRows(ids);
-    // };
-    
-    // const selectAllFiltered = () => {
-    //     const allIds = filteredData.map(row => row.id);
-    //     setSelectedRows(allIds);
-    // };
-
-    // approval button
-    // const handleApprove = async (row: ReviewRow) => {
-    //     setLoadingButtons(prev => ({ ...prev, [row.id]: 'approve'}));
-    //     try {
-    //         const updatedRow = await actionFormStatus(row.id, 'approved');
-    //         await approved({ //new
-    //             name: row.name,
-    //             email: row.email,
-    //             clientId: row.client_id,
-    //         });
-
-    //         if (updatedRow) {
-    //             setTableData(prev =>
-    //                 prev.map(item =>
-    //                     item.id === row.id ? { ...item, form_status: updatedRow.form_status } : item
-    //                 )
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Approval failed:", error);
-    //     } finally {
-    //         setLoadingButtons(prev => ({ ...prev, [row.id]: null}));
-    //     }
-    // };
-
-    // reject button
-    // const handleReject = async (row: ReviewRow) => {
-    //     setLoadingButtons(prev => ({ ...prev, [row.id]: 'reject' }));
-    //     try {
-    //         const updatedRow = await actionFormStatus(row.id, 'rejected');
-    //         await rejected ({
-    //             name: row.name,
-    //             email: row.email,
-    //             clientId: row.client_id,
-    //         });
-
-    //         if (updatedRow) {
-    //             setTableData(prev =>
-    //                 prev.map(item =>
-    //                     item.id === row.id ? { ...item, form_status: updatedRow.form_status } : item
-    //                 )
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Rejection failed:", error);
-    //     } finally {
-    //         setLoadingButtons(prev => ({ ...prev, [row.id]: null}));
-    //     }
-    // };
-
-    // not checked button
-    // const handleNotChecked = async (row: ReviewRow) => {
-    //     setLoadingButtons(prev => ({ ...prev, [row.id]: 'not checked' }));
-    //     try {
-    //         const updatedRow = await actionFormStatus(row.id, 'not checked');
-
-    //         if (updatedRow) {
-    //             setTableData(prev =>
-    //                 prev.map(item =>
-    //                     item.id === row.id ? { ...item, form_status: updatedRow.form_status } : item
-    //                 )
-    //             );
-    //         }
-    //     } catch (error) {
-    //         console.error("Not checked failed:", error);
-    //     } finally {
-    //         setLoadingButtons(prev => ({ ...prev, [row.id]: null}));
-    //     }
-    // };
 
     return (
         <div className="relative overflow-visible z-10">
@@ -319,7 +235,8 @@ export default function Table({ data }: Props) {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                        <th className="px-6 py-3 ">No</th>
+                        <th className="px-6 py-3">No</th>
+                        <th className="px-6 py-3">No ID</th>
                         <th className="px-6 py-3">Name</th>
                         <th className="px-6 py-3">Email</th>
                         <th className="px-6 py-3">Client ID</th>
@@ -367,6 +284,7 @@ export default function Table({ data }: Props) {
                     {paginatedData.map((item, index) => (
                         <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <td className="px-6 py-4">{(currentPage - 1) * ROWS_PER_PAGE + index + 1}</td>
+                            <td className="px-6 py-4">{item.id}</td>
                             <td className="px-6 py-4">{item.name}</td>
                             <td className="px-6 py-4">{item.email}</td>
                             <td className="px-6 py-4">{item.client_id}</td>
@@ -391,26 +309,33 @@ export default function Table({ data }: Props) {
                             </td>
                             <td className="px-6 py-4">{timestamps(item.submitted_at)}</td>
                             <td className="px-6 py-4">
-                                <div className="flex justify-center items-center gap-2 h-full">
+                                <div className="grid grid-rows-4 gap-2">
                                     <button
-                                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 flex justify-center items-center"
                                         onClick={() => handleStatusUpdate(item, 'approved')}
                                     >
                                         {loadingButtons[item.id] === 'approve' ? <Loader /> : <p>Approve</p>}
                                     </button>
                                     
                                     <button
-                                        className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                                        className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 flex justify-center items-center"
                                         onClick={() => handleStatusUpdate(item, 'rejected')}
                                     >
                                         {loadingButtons[item.id] === 'reject' ? <Loader /> : <p>Reject</p>}
                                     </button>
 
                                     <button
-                                        className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700"
+                                        className="px-3 py-1 text-sm bg-gray-600 text-white rounded hover:bg-gray-700 flex justify-center items-center"
                                         onClick={() => handleStatusUpdate(item, 'not checked')}
                                     >
                                         {loadingButtons[item.id] === 'not checked' ? <Loader /> : <p>Not Checked</p>}
+                                    </button>
+
+                                    <button
+                                        className="px-3 py-1 text-sm bg-red-900 text-white rounded hover:bg-red-600 flex justify-center items-center"
+                                        onClick={() => handleDeleteUser(item, item.form_status as 'approved' | 'rejected' | 'not checked')}
+                                    >
+                                        {loadingDeletes[item.id] ? <Loader /> : <p>Delete User</p>}
                                     </button>
                                 </div>
                             </td>
