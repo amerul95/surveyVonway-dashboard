@@ -5,7 +5,7 @@ import { exportExcel } from '@/app/lib/xlsx';
 import { ReviewRow } from '../types';
 
 interface Props {
-    data: ReviewRow[]; // or ExtendedReviewRow[]
+    data: ReviewRow[]; 
     selectedOnly?: boolean;
     startDate: Date | null;
     endDate: Date | null;
