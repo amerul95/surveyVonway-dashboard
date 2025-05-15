@@ -1,11 +1,7 @@
 // lib/filterdata.ts
 import { ReviewRow } from "@/components/types";
 
-export function filterData(
-    data: ReviewRow[],
-    query: string,
-    statusFilter: 'all' | 'not checked' | 'approved' | 'rejected'
-): ReviewRow[] {
+export function filterData(data: ReviewRow[], query: string, statusFilter: 'all' | 'not checked' | 'approved' | 'rejected'): ReviewRow[] {
     const lowerQuery = query.toLowerCase();
 
     return data.filter((item) => {

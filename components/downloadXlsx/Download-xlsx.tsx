@@ -18,13 +18,19 @@ export default function DownloadButton({ data, startDate, endDate, selectedOnly 
         startTransition(async () => {
             const base64 = await exportExcel(data, selectedOnly, startDate, endDate);
 
-            // Convert base64 to binary
+            if (!base64) {
+                alert('No new data available to export.');
+                return;
+            }
+
+            // Decode base64 into binary
             const binary = atob(base64);
             const bytes = new Uint8Array(binary.length);
             for (let i = 0; i < binary.length; i++) {
                 bytes[i] = binary.charCodeAt(i);
             }
 
+            // Create a Blob and trigger download
             const blob = new Blob([bytes], {
                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             });

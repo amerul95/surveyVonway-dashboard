@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { ReviewRow } from '../types';
 import ZoomableImage from '../zoom-image/ZoomableImage';
 import timestamps from '@/app/lib/timestamps';
@@ -14,6 +14,9 @@ import Search from '../search/Search';
 import { filterData } from '@/app/lib/filterdata';
 import { useSearchParams } from 'next/navigation';
 import { deleteUserDatabase } from '@/app/lib/deleteuser';
+import ExcelUpload from '../uploadFile/ExcelUpload';
+import { mergeData } from '@/app/lib/mergedata';
+import { saveToDb } from '@/app/lib/saveToDb';
 
 
 interface Props {
@@ -21,6 +24,10 @@ interface Props {
 }
 
 export default function Table({ data }: Props) {
+    const [uploadedRows, setUploadedRows] = useState<ReviewRow[]>([]);
+    const [mergedRows, setMergedRows] = useState<ReviewRow[] | null>(null);
+    const [isPending, startTransition] = useTransition();
+
     const [loadingDeletes, setLoadingDeletes] = useState<{ [id: number]: boolean }>({});
     const [loadingButtons, setLoadingButtons] = useState<{ [id:number]: 'approve' | 'reject' | 'not checked' | null }>({});
     const [currentPage, setCurrentPage] = useState(1);
@@ -183,6 +190,32 @@ export default function Table({ data }: Props) {
         }
     };
     
+    const handleUpload = (rows: ReviewRow[]) => {
+        setUploadedRows(rows); // only store the uploaded content
+        setMergedRows(null);   // reset any previous merge
+    };
+
+    const handleSave = () => {
+        if (!mergedRows) return;
+
+        startTransition(async () => {
+            const result = await saveToDb(mergedRows);
+
+            if (result.success) {
+                alert("Saved successfully");
+                window.location.reload(); 
+            } else {
+                console.error(" save failed:", result.error);
+                alert("Failed to save");
+            }
+        });
+    };
+
+    const handleMerge = () => {
+        const result = mergeData(data, uploadedRows); // data = original table
+        setMergedRows(result);
+    };
+
 
     return (
         <div className="relative overflow-visible z-10">
@@ -196,8 +229,39 @@ export default function Table({ data }: Props) {
                 </div>
 
                 {/* Upload excel file */}
-                <div className="flex flex-col">
-                
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
+                    {/* Upload Button */}
+                    <div>
+                        <ExcelUpload onParsed={(rows) => {
+                        setUploadedRows(rows);
+                        setMergedRows(null); 
+                        }} />
+                    </div>
+
+                    {/* Merge Button */}
+                    <div>
+                        <button
+                        onClick={handleMerge}
+                        className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                        >
+                        Merge Data
+                        </button>
+                    </div>
+
+                    {/* Save Button */}
+                    <div>
+                        <button
+                        onClick={handleSave}
+                        disabled={!mergedRows || isPending}
+                        className={`px-4 py-2 rounded ${
+                            mergedRows
+                            ? 'bg-green-600 text-white hover:bg-green-700'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                        >
+                        {isPending ? 'Saving...' : 'Save to Database'}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Search Bar */}

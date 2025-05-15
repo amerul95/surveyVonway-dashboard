@@ -1,6 +1,6 @@
 'use server';
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { ReviewRow } from '@/components/types';
 
 type ExtendedReviewRow = ReviewRow & {
@@ -29,19 +29,36 @@ data: ExtendedReviewRow[], selectedOnly: boolean, startDate: Date | null, endDat
 
     if (newData.length === 0) return null;
 
-    const worksheet = XLSX.utils.json_to_sheet(newData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    // Create workbook and worksheet using ExcelJS
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('sheet1');
 
-    const base64 = XLSX.write(workbook, {
-        type: 'base64',
-        bookType: 'xlsx',
+    // Add headers based on object keys
+    const headers = Object.keys(newData[0]).filter(key => key !== 'downloaded' && key !== 'selected');
+    worksheet.columns = headers.map(key => ({
+        header: key,
+        key: key,
+        width: 20,
+    }));
+
+   // Add data rows
+    newData.forEach(row => {
+        const cleanedRow: Record<string, any> = {};
+        headers.forEach(key => {
+            cleanedRow[key] = (row as Record<string, any>)[key];
+        });
+        worksheet.addRow(cleanedRow);
     });
 
-    // Simulate marking entries as downloaded (replace this with DB update in real apps)
+
+    // Mark rows as downloaded
     newData.forEach(row => {
         row.downloaded = true;
     });
+
+    // Generate base64 string
+    const buffer = await workbook.xlsx.writeBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
 
     return base64;
 }
